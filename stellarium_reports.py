@@ -8,45 +8,46 @@ Created on Sun Nov 25 15:28:39 2018
 
 import requests
 import subprocess
-
-import sys
 import os.path
 
 from time import sleep
-import psutil    
 
-def stellarium_running():
-    for proc in psutil.process_iter():
-        try:
-            pinfo = proc.as_dict(attrs=['name'])
-        except psutil.NoSuchProcess:
-            pass
-        else:
-            if pinfo.get('name') == 'stellarium':
-                return True
-
-    return False
-
-
-script_dir = os.path.dirname(os.path.realpath(__file__))
-screenshot_dir = script_dir + '/screenshots'
-
-if os.path.isdir(screenshot_dir) == False:
+def start_stellarium(url, screenshot_dir):
+    proc_stellarium = None
+    # We try to get info from stellarium. This is more reliable than testing
+    # for PID as the process may be already zombified
     try:
-        os.mkdir(screenshot_dir)
-    except OSError:
-        print("Cannot create screenshot dir {}".format(screenshot_dir))
-        exit
+        requests.get(url + "main/status")
+    except:
+        proc_stellarium = subprocess.Popen(['stellarium','--screenshot-dir', screenshot_dir], stdout=subprocess.PIPE);
+        sleep(5)
+    else:
+        print("Found running stellarium. We are using it.")
+        
+    return proc_stellarium
 
-use_existing_stellarium = stellarium_running
-if not use_existing_stellarium:
-    proc_stellarium = subprocess.Popen(['stellarium','--screenshot-dir', screenshot_dir], stdout=subprocess.PIPE);
-    sleep(10)
+def make_screenshot_dir():
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    screenshot_dir = script_dir + '/screenshots'
+    
+    if os.path.isdir(screenshot_dir) == False:
+        try:
+            os.mkdir(screenshot_dir)
+        except OSError:
+            print("Cannot create screenshot dir {}".format(screenshot_dir))
+            exit
+            
+    return screenshot_dir
+
+
+
 
 url_main = "http://localhost:8090/api/"
 
-url_status = "main/status"
+screenshot_dir = make_screenshot_dir()
+proc_stellarium = start_stellarium(url_main, screenshot_dir)
 
+url_status = "main/status"
 response = requests.get(url_main + url_status)
 print("Status: ",response.status_code)
 if response.status_code == 200:
@@ -75,10 +76,10 @@ print("View: ",view)
 #    print(answer.json())
 #else:
 #    print("Post request did not succeed")
-#
-#url_actions = "stelaction/list"
-#actions = requests.get(url_main + url_actions)
-#print(actions.status_code)
+
+url_actions = "stelaction/list"
+actions = requests.get(url_main + url_actions)
+print(actions.status_code)
 #if actions.status_code == 200:
 #    print(actions.json())
 
@@ -92,5 +93,6 @@ url_planets = 'stelaction/do'
 planet = requests.post(url_main + url_planets, data={'id':'actionShow_Planets'})
 print("Show planets: ",planet)
 
-if not use_existing_stellarium:
+if proc_stellarium is not None:
+    print("We started it, so we are closing down stellarium now")
     proc_stellarium.kill()
