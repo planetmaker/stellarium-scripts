@@ -13,6 +13,14 @@ import os.path
 from time import sleep
 
 def start_stellarium(url, screenshot_dir):
+    """ Ensure that there is a running and functional stellarium instance
+    
+    Test for a working instance and start our own, if we find no instance
+    to communicate with
+    @url: top level API url of stellarium
+    @screenshot_dir: desired screenshot dir. Needed when we start stellarium
+                     ourselves
+    """
     proc_stellarium = None
     # We try to get info from stellarium. This is more reliable than testing
     # for PID as the process may be already zombified
@@ -27,6 +35,11 @@ def start_stellarium(url, screenshot_dir):
     return proc_stellarium
 
 def make_screenshot_dir():
+    """ Create a screenshot dir as sub-dir of current directory
+    
+    We assume that we don't want the screenshot in Stellarium's default dir,
+    thus we create our own for this session where we store our images.
+    """
     script_dir = os.path.dirname(os.path.realpath(__file__))
     screenshot_dir = script_dir + '/screenshots'
     
