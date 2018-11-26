@@ -7,7 +7,41 @@ Created on Sun Nov 25 15:28:39 2018
 """
 
 import requests
+import subprocess
+
+import sys
+import os.path
+
 from time import sleep
+import psutil    
+
+def stellarium_running():
+    for proc in psutil.process_iter():
+        try:
+            pinfo = proc.as_dict(attrs=['name'])
+        except psutil.NoSuchProcess:
+            pass
+        else:
+            if pinfo.get('name') == 'stellarium':
+                return True
+
+    return False
+
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
+screenshot_dir = script_dir + '/screenshots'
+
+if os.path.isdir(screenshot_dir) == False:
+    try:
+        os.mkdir(screenshot_dir)
+    except OSError:
+        print("Cannot create screenshot dir {}".format(screenshot_dir))
+        exit
+
+use_existing_stellarium = stellarium_running
+if not use_existing_stellarium:
+    proc_stellarium = subprocess.Popen(['stellarium','--screenshot-dir', screenshot_dir], stdout=subprocess.PIPE);
+    sleep(10)
 
 url_main = "http://localhost:8090/api/"
 
@@ -48,6 +82,8 @@ print("View: ",view)
 #if actions.status_code == 200:
 #    print(actions.json())
 
+sleep(1)
+
 url_screenshot = 'stelaction/do'
 screenshot = requests.post(url_main + url_screenshot, data={'id':'actionSave_Screenshot_Global'})
 print("Screenshot: ",screenshot)
@@ -55,3 +91,6 @@ print("Screenshot: ",screenshot)
 url_planets = 'stelaction/do'
 planet = requests.post(url_main + url_planets, data={'id':'actionShow_Planets'})
 print("Show planets: ",planet)
+
+if not use_existing_stellarium:
+    proc_stellarium.kill()
