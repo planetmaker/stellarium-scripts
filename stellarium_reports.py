@@ -48,9 +48,9 @@ print("View: ",view)
 #if actions.status_code == 200:
 #    print(actions.json())
 
-#url_screenshot = 'stelaction/do'
-#screenshot = requests.get(url_main + url_screenshot, json={'id':'actionSave_Screenshot_Global'})
-#print(screenshot.status_code)
+url_screenshot = 'stelaction/do'
+screenshot = requests.post(url_main + url_screenshot, data={'id':'actionSave_Screenshot_Global'})
+print("Screenshot: ",screenshot)
 
 url_planets = 'stelaction/do'
 planet = requests.post(url_main + url_planets, data={'id':'actionShow_Planets'})
