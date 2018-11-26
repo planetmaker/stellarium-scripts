@@ -54,20 +54,30 @@ def make_screenshot_dir():
 
 
 
-
 url_main = "http://localhost:8090/api/"
 
 screenshot_dir = make_screenshot_dir()
 proc_stellarium = start_stellarium(url_main, screenshot_dir)
 
 url_status = "main/status"
+url_actionlist = "stelaction/list"
+url_properties = "stelproperty/list"
 response = requests.get(url_main + url_status)
 print("Status: ",response.status_code)
-if response.status_code == 200:
-    print("Time: ", response.json().get('time'))
-    print("Location: ", response.json().get('location'))
-    print("View: ", response.json().get('view'))
+actions = requests.get(url_main + url_actionlist)
+print("Actions: ",actions.status_code)
+properties = requests.get(url_main + url_properties)
+print("Properties: ",properties.status_code)
 
+#print(response.json())
+#print(actions.json())
+#print(properties.json())
+
+#if response.status_code == 200:
+#    print("Time: ", response.json().get('time'))
+#    print("Location: ", response.json().get('location'))
+#    print("View: ", response.json().get('view'))
+#
 
 #jd_next = response.json().get('time').get('jday') + 60
 #url_time = "main/time"
@@ -90,9 +100,6 @@ print("View: ",view)
 #else:
 #    print("Post request did not succeed")
 
-url_actions = "stelaction/list"
-actions = requests.get(url_main + url_actions)
-print(actions.status_code)
 #if actions.status_code == 200:
 #    print(actions.json())
 
