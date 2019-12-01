@@ -1,0 +1,74 @@
+//
+// Name: Patenschaftsurkunde
+// Author: planetmaker@github.com
+// Version: 1.0
+// License: Public Domain
+// Description: Screenshots für die Patenschaftsurkunde der Sternfreunde Hondelage
+
+// Made on Stellarium 0.19.1
+
+include("i18n.inc");
+include("common_objects.inc");
+core.clear("natural");
+
+core.setGuiVisible(false);
+
+LandscapeMgr.setCurrentLandscapeName("Meer",1);
+LandscapeMgr.setFlagCardinalsPoints(true);
+LandscapeMgr.setFlagFog(false);
+LandscapeMgr.setFlagAtmosphere(false);
+
+var TitleNow = tr("Blödsinn");
+var MyLocation = core.getObserverLocationInfo();
+LabelMgr.deleteAllLabels();
+MarkerMgr.deleteAllMarkers();
+// LandscapeMgr.setFlagCardinalsPoints(true);
+LabelMgr.labelScreen(TitleNow,200,200,false,30,"#ff0000");
+
+StelSkyDrawer.setAbsoluteStarScale(5.0);
+StelSkyDrawer.setRelativeStarScale(1.5);
+StelSkyLayerMgr.setFlagShow(false);
+
+ConstellationMgr.setFlagLines(true);
+ConstellationMgr.setFlagLabels(true);
+ConstellationMgr.setFlagBoundaries(false);
+ConstellationMgr.setConstellationLineThickness(3);
+ConstellationMgr.setFontSize(18);
+
+ZodiacalLight.setFlagShow(false);
+NebulaMgr.setFlagShow(false);
+MilkyWay.setFlagShow(false);
+SporadicMeteorMgr.setFlagShow(false);
+// StelSkyCultureMgr.setCurrentSkyCultureID(0);
+
+StarMgr.setFlagStars(true);
+StarMgr.setFlagLabels(true);
+StarMgr.setLabelsAmount(3);
+
+
+
+core.wait(1);
+// core.setTimezone("CET");
+
+StelMovementMgr.zoomTo(60,10);
+// SolarSystem.setFlagPlanets(true);
+core.wait(2);
+
+core.wait(1);
+StelMovementMgr.lookZenith();
+
+ConstellationMgr.setFlagIsolateSelected(false);
+ConstellationMgr.setFlagBoundaries(false);
+ConstellationMgr.setFlagLines(true);
+
+// var objNameSum = ["Vega"];
+
+StelMovementMgr.zoomTo(80,3);
+core.wait(3);
+
+// core.setCustomScreenshotHeight(1000);
+// core.setCustomScreenshotWidth(1500);
+core.screenshot(prefix="urkunde_",invert=true);
+
+core.goHome();
+core.setGuiVisible(true);
